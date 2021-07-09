@@ -37,14 +37,12 @@
 package fr.moribus.imageonmap.ui;
 
 import fr.moribus.imageonmap.Permissions;
-import fr.moribus.imageonmap.PluginConfiguration;
 import fr.moribus.imageonmap.map.ImageMap;
 import fr.moribus.imageonmap.map.MapManager;
 import fr.moribus.imageonmap.map.PosterMap;
 import fr.moribus.imageonmap.map.SingleMap;
 import fr.zcraft.quartzlib.components.i18n.I;
 import fr.zcraft.quartzlib.core.QuartzLib;
-import fr.zcraft.quartzlib.tools.PluginLogger;
 import fr.zcraft.quartzlib.tools.items.ItemStackBuilder;
 import fr.zcraft.quartzlib.tools.items.ItemUtils;
 import fr.zcraft.quartzlib.tools.runners.RunTask;
@@ -279,7 +277,6 @@ public class MapItemManager implements Listener {
             // If it is not displayed on hover on the wall.
             if (mapItem.hasItemMeta() && mapItem.getItemMeta().hasDisplayName()
                     && mapItem.getItemMeta().getDisplayName().startsWith("§6")) {
-                //runtask
                 //TODO utiliser run task.later pour essayer de regler le pb d'itemframe bas gauche sans carte
                 final ItemStack frameItem = mapItem.clone();
                 final ItemMeta meta = frameItem.getItemMeta();
@@ -293,9 +290,7 @@ public class MapItemManager implements Listener {
 
             } else {
                 frame.setRotation(Rotation.NONE);
-                RunTask.later(() -> {
-                    frame.setItem(mapItem);
-                }, 5L);
+                RunTask.later(() -> frame.setItem(mapItem), 5L);
 
             }
 

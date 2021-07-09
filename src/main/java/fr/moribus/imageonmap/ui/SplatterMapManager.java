@@ -42,17 +42,15 @@ import fr.moribus.imageonmap.map.ImageMap;
 import fr.moribus.imageonmap.map.MapManager;
 import fr.moribus.imageonmap.map.PosterMap;
 import fr.zcraft.quartzlib.components.i18n.I;
-import fr.zcraft.quartzlib.components.nbt.NBT;
-import fr.zcraft.quartzlib.components.nbt.NBTCompound;
-import fr.zcraft.quartzlib.components.nbt.NBTList;
 import fr.zcraft.quartzlib.tools.PluginLogger;
 import fr.zcraft.quartzlib.tools.items.GlowEffect;
 import fr.zcraft.quartzlib.tools.items.ItemStackBuilder;
-import fr.zcraft.quartzlib.tools.reflection.NMSException;
 import fr.zcraft.quartzlib.tools.runners.RunTask;
 import fr.zcraft.quartzlib.tools.text.MessageSender;
 import fr.zcraft.quartzlib.tools.world.FlatLocation;
 import fr.zcraft.quartzlib.tools.world.WorldUtils;
+import net.minecraft.nbt.NBTList;
+import net.minecraft.nbt.NBTTagCompound;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -63,6 +61,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.MapMeta;
 
 
@@ -138,16 +137,14 @@ public abstract class SplatterMapManager {
      */
     public static boolean hasSplatterAttributes(ItemStack itemStack) {
         try {
-            final NBTCompound nbt = NBT.fromItemStack(itemStack);
-            if (!nbt.containsKey("Enchantments")) {
+            net.minecraft.world.item.ItemStack mcStack = net.minecraft.world.item.ItemStack.fromBukkitCopy(itemStack);
+            final NBTTagCompound nbt = mcStack.getTag();
+            if (nbt == null) {
+                PluginLogger.error("Item has no NBT!");
                 return false;
             }
-            final Object enchantments = nbt.get("Enchantments");
-            if (!(enchantments instanceof NBTList)) {
-                return false;
-            }
-            return !((NBTList) enchantments).isEmpty();
-        } catch (NMSException e) {
+            return nbt.hasKey("Enchantments");
+        } catch (Exception e) {
             PluginLogger.error("Unable to get Splatter Map attribute on item", e);
             return false;
         }
@@ -192,12 +189,12 @@ public abstract class SplatterMapManager {
      *
      * @param startFrame Frame clicked by the player
      * @param player     Player placing map
-     * @return true if the map was correctly placed
      */
     public static boolean placeSplatterMap(ItemFrame startFrame, Player player, PlayerInteractEntityEvent event) {
         ImageMap map = MapManager.getMap(player.getInventory().getItemInMainHand());
 
         if (!(map instanceof PosterMap)) {
+            PluginLogger.error("Not a postermap, abort.");
             return false;
         }
         PosterMap poster = (PosterMap) map;
@@ -218,7 +215,6 @@ public abstract class SplatterMapManager {
                         I.t("{ce}There is not enough space to place this map ({0} × {1}).",
                                 poster.getColumnCount(),
                                 poster.getRowCount()));
-
 
                 return false;
             }
@@ -300,11 +296,15 @@ public abstract class SplatterMapManager {
 
                 int id = poster.getMapIdAtReverseY(i);
 
-                RunTask.later(() -> {
-                    frame.setItem(
-                            new ItemStackBuilder(Material.FILLED_MAP).nbt(ImmutableMap.of("map", id)).craftItem());
-                }, 5L);
+                net.minecraft.world.item.ItemStack mcStack =
+                        net.minecraft.world.item.ItemStack.fromBukkitCopy(new ItemStack(Material.FILLED_MAP, 1));
+                NBTTagCompound compound = new NBTTagCompound();
+                compound.setInt("map", id);
+                mcStack.setTag(compound);
 
+                RunTask.later(() -> {
+                    frame.setItem(mcStack.asBukkitCopy());
+                }, 5L);
 
                 //Force reset of rotation
                 frame.setRotation(Rotation.NONE);
@@ -332,7 +332,7 @@ public abstract class SplatterMapManager {
             return null;
         }
         FlatLocation loc = new FlatLocation(startFrame.getLocation(), startFrame.getFacing());
-        ItemFrame[] matchingFrames = null;
+        ItemFrame[] matchingFrames;
 
         switch (startFrame.getFacing()) {
             case UP:

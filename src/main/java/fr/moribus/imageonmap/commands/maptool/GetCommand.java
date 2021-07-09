@@ -36,7 +36,6 @@
 
 package fr.moribus.imageonmap.commands.maptool;
 
-import fr.moribus.imageonmap.ImageOnMap;
 import fr.moribus.imageonmap.Permissions;
 import fr.moribus.imageonmap.commands.IoMCommand;
 import fr.moribus.imageonmap.map.ImageMap;
@@ -49,7 +48,7 @@ import java.util.List;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CommandInfo(name = "get",usageParameters = "[player name]:<map name>")
+@CommandInfo(name = "get", usageParameters = "[player name]:<map name>")
 public class GetCommand extends IoMCommand {
     @Override
     protected void run() throws CommandException {
@@ -78,9 +77,6 @@ public class GetCommand extends IoMCommand {
             playerName = arguments.get(0);
             mapName = arguments.get(1);
         }
-
-
-
 
 
         retrieveUUID(playerName, uuid -> {

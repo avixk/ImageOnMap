@@ -52,7 +52,6 @@ import org.bukkit.entity.Player;
 
 public abstract class IoMCommand extends Command {
 
-
     protected void retrieveUUID(String arg, Consumer<UUID> consumer) {
         UUID uuid;
         OfflinePlayer offlinePlayer;

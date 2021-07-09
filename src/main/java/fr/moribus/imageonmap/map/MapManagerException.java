@@ -51,7 +51,7 @@ public class MapManagerException extends Exception {
     public Reason getReason() {
         return reason;
     }
-    
+
     public enum Reason {
         MAXIMUM_PLAYER_MAPS_EXCEEDED(I.t("You have too many maps (maximum : {0}).")),
         MAXIMUM_SERVER_MAPS_EXCEEDED(I.t("The server ImageOnMap limit has been reached.")),

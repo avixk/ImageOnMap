@@ -36,7 +36,6 @@
 
 package fr.moribus.imageonmap.commands.maptool;
 
-import fr.moribus.imageonmap.ImageOnMap;
 import fr.moribus.imageonmap.Permissions;
 import fr.moribus.imageonmap.commands.IoMCommand;
 import fr.moribus.imageonmap.image.ImageRendererExecutor;
@@ -173,7 +172,7 @@ public class UpdateCommand extends IoMCommand {
 
                 Integer[] size = {1, 1};
                 if (map.getType() == ImageMap.Type.POSTER) {
-                    size = map.getSize(map.getUserUUID(), map.getId());
+                    size = ImageMap.getSize(map.getUserUUID(), map.getId());
                 }
 
                 int width = size[0];

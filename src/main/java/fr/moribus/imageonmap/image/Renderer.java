@@ -46,6 +46,7 @@ import org.bukkit.map.MapView;
 
 public class Renderer extends MapRenderer {
     private BufferedImage image;
+    private boolean dithering = false;
 
     protected Renderer() {
         this(null);
@@ -101,7 +102,11 @@ public class Renderer extends MapRenderer {
         if (image == null) {
             return;
         }
-        canvas.drawImage(0, 0, image);
+        if (dithering) {
+            canvas.drawImage(0, 0, Ditherer.floydSteinbergDithering(image));
+        } else {
+            canvas.drawImage(0, 0, image);
+        }
         image = null;
     }
 

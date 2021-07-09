@@ -390,9 +390,7 @@ public class V3Migrator implements Runnable {
                 try {
                     oldPoster = new OldSavedPoster(oldPosters.get(key), key);
                     postersToMigrate.add(oldPoster);
-                    if (!userNamesToFetch.contains(oldPoster.getUserName())) {
-                        userNamesToFetch.add(oldPoster.getUserName());
-                    }
+                    userNamesToFetch.add(oldPoster.getUserName());
                 } catch (InvalidConfigurationException ex) {
                     PluginLogger.warning("Could not read poster data for key {0}", ex, key);
                 }
@@ -414,9 +412,7 @@ public class V3Migrator implements Runnable {
                         mapsToMigrate.add(oldMap);
                     }
 
-                    if (!userNamesToFetch.contains(oldMap.getUserName())) {
-                        userNamesToFetch.add(oldMap.getUserName());
-                    }
+                    userNamesToFetch.add(oldMap.getUserName());
                 } catch (InvalidConfigurationException ex) {
                     PluginLogger.warning("Could not read poster data for key '{0}'", ex, key);
                 }
@@ -484,7 +480,7 @@ public class V3Migrator implements Runnable {
                     missingUsersList += user + ", ";
                 }
             }
-            missingUsersList = missingUsersList.substring(0, missingUsersList.length());
+            missingUsersList = missingUsersList;
 
             PluginLogger.info(missingUsersList);
         }

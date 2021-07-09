@@ -198,13 +198,9 @@ public class PosterOnASurface {
     public boolean isValid(Player p) {
         ItemFrame curFrame;
 
-
         FlatLocation l = loc1.clone();
-
         BlockFace bf = WorldUtils.get4thOrientation(p.getLocation());
-
         l.subtract(loc2);
-
 
         int distX = Math.abs(l.getBlockX());
         int distZ = Math.abs(l.getBlockZ());

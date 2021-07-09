@@ -177,7 +177,6 @@ public class PosterMap extends ImageMap {
     }
 
 
-
     public boolean hasColumnData() {
         return rowCount != 0 && columnCount != 0;
     }
