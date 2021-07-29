@@ -36,6 +36,7 @@
 
 package fr.moribus.imageonmap.gui;
 
+import fr.moribus.imageonmap.ImageOnMap;
 import fr.moribus.imageonmap.Permissions;
 import fr.moribus.imageonmap.map.ImageMap;
 import fr.moribus.imageonmap.map.PosterMap;
@@ -48,11 +49,15 @@ import fr.zcraft.quartzlib.components.gui.PromptGui;
 import fr.zcraft.quartzlib.components.i18n.I;
 import fr.zcraft.quartzlib.tools.items.ItemStackBuilder;
 import fr.zcraft.quartzlib.tools.runners.RunTask;
+import java.util.List;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.wesjd.anvilgui.AnvilGUI;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
-
 
 public class MapDetailGui extends ExplorerGui<Integer> {
     private final ImageMap map;
@@ -199,7 +204,6 @@ public class MapDetailGui extends ExplorerGui<Integer> {
         );
     }
 
-
     @GuiAction("rename")
     public void rename() {
         if (!Permissions.RENAME.grantedTo(getPlayer())) {
@@ -208,32 +212,33 @@ public class MapDetailGui extends ExplorerGui<Integer> {
             return;
         }
 
-        PromptGui.prompt(getPlayer(), newName -> {
-            if (!Permissions.RENAME.grantedTo(getPlayer())) {
-                I.sendT(getPlayer(), "{ce}You are no longer allowed to do that.");
-                return;
-            }
+        close();
+        close();
 
-            if (newName == null || newName.isEmpty()) {
-                I.sendT(getPlayer(), "{ce}Map names can't be empty.");
-                return;
-            }
-            if (newName.equals(map.getName())) {
-                return;
-            }
+        new AnvilGUI.Builder()
+                .onComplete((player, newName) -> {
+                    if (newName == null || newName.isEmpty()) {
+                        return AnvilGUI.Response.text(I.t("{ce}Map names can't be empty."));
+                    }
+                    if (newName.equals(map.getName())) {
+                        return AnvilGUI.Response.close();
+                    }
 
-            map.rename(newName);
-            I.sendT(getPlayer(), "{cs}Map successfully renamed.");
+                    map.rename(newName);
+                    return AnvilGUI.Response.text(I.t("{cs}Map successfully renamed."));
+                })
+                .text(map.getName())
+                .itemLeft(new ItemStack(Material.MAP))
+                .title(I.t("{ce}What's the new name?"))
+                .plugin(ImageOnMap.getPlugin())
+                .open(getPlayer());
+    }
 
-            if (getParent() != null) {
-                RunTask.later(() -> Gui.open(getPlayer(), this), 1L);
-
-            } else {
-                close();
-            }
-        }, map.getName(), this);
-
-
+    ItemStack item = new ItemStack(Material.BARRIER);
+    public void lol() {
+        item.editMeta(meta -> {
+            meta.lore(List.of(Component.text("lol"), Component.text("hey")));
+        });
     }
 
     @GuiAction("delete")
