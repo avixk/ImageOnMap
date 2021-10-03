@@ -53,6 +53,7 @@ import fr.zcraft.quartzlib.tools.runners.RunTask;
 import fr.zcraft.quartzlib.tools.text.MessageSender;
 import fr.zcraft.quartzlib.tools.world.FlatLocation;
 import fr.zcraft.quartzlib.tools.world.WorldUtils;
+import net.minecraft.nbt.NBTTagCompound;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -138,18 +139,15 @@ public abstract class SplatterMapManager {
      * @return True if the attribute was detected.
      */
     public static boolean hasSplatterAttributes(ItemStack itemStack) {
-
         try {
-            final NBTCompound nbt = NBT.fromItemStack(itemStack);
-            if (!nbt.containsKey("Enchantments")) {
+            net.minecraft.world.item.ItemStack mcStack = net.minecraft.world.item.ItemStack.fromBukkitCopy(itemStack);
+            final NBTTagCompound nbt = mcStack.getTag();
+            if (nbt == null) {
+                PluginLogger.error("Item has no NBT!");
                 return false;
             }
-            final Object enchantments = nbt.get("Enchantments");
-            if (!(enchantments instanceof NBTList)) {
-                return false;
-            }
-            return !((NBTList) enchantments).isEmpty();
-        } catch (NMSException e) {
+            return nbt.hasKey("Enchantments");
+        } catch (Exception e) {
             PluginLogger.error("Unable to get Splatter Map attribute on item", e);
             return false;
         }
@@ -302,9 +300,14 @@ public abstract class SplatterMapManager {
 
                 int id = poster.getMapIdAtReverseY(i);
 
+                net.minecraft.world.item.ItemStack mcStack =
+                        net.minecraft.world.item.ItemStack.fromBukkitCopy(new ItemStack(Material.FILLED_MAP, 1));
+                NBTTagCompound compound = new NBTTagCompound();
+                compound.setInt("map", id);
+                mcStack.setTag(compound);
+
                 RunTask.later(() -> {
-                    frame.setItem(
-                            new ItemStackBuilder(Material.FILLED_MAP).nbt(ImmutableMap.of("map", id)).craftItem());
+                    frame.setItem(mcStack.asBukkitCopy());
                 }, 5L);
 
 

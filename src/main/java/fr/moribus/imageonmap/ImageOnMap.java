@@ -144,10 +144,6 @@ public final class ImageOnMap extends QuartzPlugin {
         Commands.registerShortcut("maptool", ExploreCommand.class, "maps");
         Commands.registerShortcut("maptool", GiveCommand.class, "givemap");
 
-        if (PluginConfiguration.CHECK_FOR_UPDATES.get()) {
-            UpdateChecker.boot("imageonmap.26585");
-        }
-
         if (PluginConfiguration.COLLECT_DATA.get()) {
             final Metrics metrics = new Metrics(this,5920);
             metrics.addCustomChart(new Metrics.SingleLineChart("rendered-images", MapManager::getImagesCount));
