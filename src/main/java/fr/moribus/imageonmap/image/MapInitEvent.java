@@ -54,6 +54,7 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.event.world.EntitiesLoadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapView;
 
@@ -97,15 +98,12 @@ public class MapInitEvent implements Listener {
     }
 
     @EventHandler
-    public void onChunkLoad(ChunkLoadEvent event) {
-        //Fix for paper
-        RunTask.later(() -> {
-            for (Entity entity : event.getChunk().getEntities()) {
-                if (entity instanceof ItemFrame) {
-                    initMap(((ItemFrame) entity).getItem());
-                }
+    public void onEntitiesLoad(EntitiesLoadEvent event) {
+        for (Entity entity : event.getEntities()) {
+            if (entity instanceof ItemFrame) {
+                initMap(((ItemFrame) entity).getItem());
             }
-        }, 5L);
+        }
     }
 
     @EventHandler

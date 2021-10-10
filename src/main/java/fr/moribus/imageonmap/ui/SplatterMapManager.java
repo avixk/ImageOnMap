@@ -241,7 +241,8 @@ public abstract class SplatterMapManager {
                 //Rotation management relative to player rotation the default position is North,
                 // when on ceiling we flipped the rotation
                 net.minecraft.world.item.ItemStack mcStack =
-                    net.minecraft.world.item.ItemStack.fromBukkitCopy(new ItemStack(Material.FILLED_MAP, 1));
+                        net.minecraft.world.item.ItemStack.fromBukkitCopy(
+                            new ItemStack(Material.FILLED_MAP, 1));
                 NBTTagCompound compound = new NBTTagCompound();
                 compound.setInt("map", id);
                 mcStack.setTag(compound);

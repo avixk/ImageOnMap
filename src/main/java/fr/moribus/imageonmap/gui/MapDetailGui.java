@@ -49,6 +49,11 @@ import fr.zcraft.quartzlib.components.i18n.I;
 import fr.zcraft.quartzlib.tools.PluginLogger;
 import fr.zcraft.quartzlib.tools.items.ItemStackBuilder;
 import fr.zcraft.quartzlib.tools.runners.RunTask;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -210,7 +215,14 @@ public class MapDetailGui extends ExplorerGui<Integer> {
         }
 
         try {
-            PromptGui.prompt(getPlayer(), newName -> {
+            I.sendT(getPlayer(), "{ce} Please use the command instead, sorry!");
+            getPlayer().sendMessage(Component.text("Click here to load the command. "
+                        + "Be sure to be holding the map.",
+                    Style.style(TextDecoration.ITALIC, NamedTextColor.GRAY))
+                    .clickEvent(
+                        ClickEvent.suggestCommand("/maptool rename " + map.getName() + " ")));
+            close();
+            /*PromptGui.prompt(getPlayer(), newName -> {
                 if (!Permissions.RENAME.grantedTo(getPlayer())) {
                     I.sendT(getPlayer(), "{ce}You are no longer allowed to do that.");
                     return;
@@ -233,7 +245,7 @@ public class MapDetailGui extends ExplorerGui<Integer> {
                 } else {
                     close();
                 }
-            }, map.getName(), this);
+            }, map.getName(), this);*/
 
         } catch (IllegalStateException e) {
             PluginLogger.info("error while renaming");
