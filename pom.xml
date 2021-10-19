@@ -44,9 +44,9 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>1.16</java.version>
-        <maven.compiler.source>16</maven.compiler.source>
-        <maven.compiler.target>16</maven.compiler.target>
+        <java.version>1.8</java.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
     <pluginRepositories>
@@ -57,17 +57,34 @@
     </pluginRepositories>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>3.1.2</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.puppycrawl.tools</groupId>
+                            <artifactId>checkstyle</artifactId>
+                            <version>9.0.1</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.3.0-SNAPSHOT</version>
+                <version>3.2.4</version>
                 <configuration>
-                        <createDependencyReducedPom>false</createDependencyReducedPom>
                     <artifactSet>
                         <includes>
                             <include>fr.zcraft:quartzlib</include>
+                            <include>org.bstats:bstats-base</include>
                             <include>org.bstats:bstats-bukkit</include>
+                            <include>io.papermc:paperlib</include>
                         </includes>
                     </artifactSet>
                     <relocations>
@@ -77,10 +94,13 @@
                         </relocation>
                         <relocation>
                             <pattern>org.bstats</pattern>
-                            <shadedPattern>fr.moribus.imageonmap</shadedPattern>
+                            <shadedPattern>fr.moribus.imageonmap.bstats</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>io.papermc.lib</pattern>
+                            <shadedPattern>fr.moribus.imageonmap.paperlib</shadedPattern>
                         </relocation>
                     </relocations>
-                    <minimizeJar>true</minimizeJar>
                 </configuration>
                 <executions>
                     <execution>
@@ -89,7 +109,6 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <minimizeJar>true</minimizeJar>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                         </configuration>
                     </execution>
@@ -129,7 +148,6 @@
             <id>zdevelopers-quartzlib</id>
             <url>https://maven.zcraft.fr/QuartzLib</url>
         </repository>
-
         <!-- bStats -->
         <repository>
             <id>CodeMC</id>
@@ -138,6 +156,18 @@
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>io.papermc</groupId>
+            <artifactId>paperlib</artifactId>
+            <version>1.0.6</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.destroystokyo.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>1.13.2-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper</artifactId>
@@ -152,7 +182,7 @@
         <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
-            <version>1.8</version>
+            <version>2.2.1</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

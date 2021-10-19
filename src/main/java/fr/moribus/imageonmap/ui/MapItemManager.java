@@ -286,19 +286,7 @@ public class MapItemManager implements Listener {
 
                 meta.setDisplayName(null);
                 frameItem.setItemMeta(meta);
-                RunTask.later(() -> {
-                    frame.setItem(frameItem);
-                    frame.setRotation(Rotation.NONE);
-                }, 5L);
-
-            } else {
-                frame.setRotation(Rotation.NONE);
-                RunTask.later(() -> {
-                    frame.setItem(mapItem);
-                }, 5L);
-
             }
-
         }
 
         ItemUtils.consumeItem(player, mapItem);

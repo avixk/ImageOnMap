@@ -36,7 +36,6 @@
 
 package fr.moribus.imageonmap;
 
-
 import fr.moribus.imageonmap.commands.maptool.DeleteCommand;
 import fr.moribus.imageonmap.commands.maptool.ExploreCommand;
 import fr.moribus.imageonmap.commands.maptool.GetCommand;
@@ -60,10 +59,11 @@ import fr.zcraft.quartzlib.components.gui.Gui;
 import fr.zcraft.quartzlib.components.i18n.I18n;
 import fr.zcraft.quartzlib.core.QuartzPlugin;
 import fr.zcraft.quartzlib.tools.PluginLogger;
-import fr.zcraft.quartzlib.tools.UpdateChecker;
+import io.papermc.lib.PaperLib;
 import java.io.File;
 import java.io.IOException;
 import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SingleLineChart;
 
 public final class ImageOnMap extends QuartzPlugin {
     private static final String IMAGES_DIRECTORY_NAME = "images";
@@ -146,11 +146,14 @@ public final class ImageOnMap extends QuartzPlugin {
 
         if (PluginConfiguration.COLLECT_DATA.get()) {
             final Metrics metrics = new Metrics(this,5920);
-            metrics.addCustomChart(new Metrics.SingleLineChart("rendered-images", MapManager::getImagesCount));
-            metrics.addCustomChart(new Metrics.SingleLineChart("used-minecraft-maps", MapManager::getMapCount));
+            metrics.addCustomChart(new SingleLineChart("rendered-images", MapManager::getImagesCount));
+            metrics.addCustomChart(new SingleLineChart("used-minecraft-maps", MapManager::getMapCount));
         } else {
             PluginLogger.warning("Collect data disabled");
         }
+
+        PaperLib.suggestPaper(this); // https://papermc.io ;)
+
     }
 
     @Override

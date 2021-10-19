@@ -53,6 +53,7 @@ import fr.zcraft.quartzlib.tools.runners.RunTask;
 import fr.zcraft.quartzlib.tools.text.MessageSender;
 import fr.zcraft.quartzlib.tools.world.FlatLocation;
 import fr.zcraft.quartzlib.tools.world.WorldUtils;
+import io.papermc.lib.PaperLib;
 import net.minecraft.nbt.NBTTagCompound;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -140,13 +141,26 @@ public abstract class SplatterMapManager {
      */
     public static boolean hasSplatterAttributes(ItemStack itemStack) {
         try {
-            net.minecraft.world.item.ItemStack mcStack = net.minecraft.world.item.ItemStack.fromBukkitCopy(itemStack);
-            final NBTTagCompound nbt = mcStack.getTag();
-            if (nbt == null) {
-                PluginLogger.error("Item has no NBT!");
-                return false;
+            if (PaperLib.isVersion(17, 1)) {
+                net.minecraft.world.item.ItemStack mcStack =
+                        net.minecraft.world.item.ItemStack.fromBukkitCopy(itemStack);
+                final NBTTagCompound nbt = mcStack.getTag();
+                if (nbt == null) {
+                    PluginLogger.error("Item has no NBT!");
+                    return false;
+                }
+                return nbt.hasKey("Enchantments");
+            } else {
+                final NBTCompound nbt = NBT.fromItemStack(itemStack);
+                if (!nbt.containsKey("Enchantments")) {
+                    return false;
+                }
+                final Object enchantments = nbt.get("Enchantments");
+                if (!(enchantments instanceof NBTList)) {
+                    return false;
+                }
+                return !((NBTList) enchantments).isEmpty();
             }
-            return nbt.hasKey("Enchantments");
         } catch (Exception e) {
             PluginLogger.error("Unable to get Splatter Map attribute on item", e);
             return false;
@@ -240,16 +254,24 @@ public abstract class SplatterMapManager {
                 }
                 //Rotation management relative to player rotation the default position is North,
                 // when on ceiling we flipped the rotation
-                net.minecraft.world.item.ItemStack mcStack =
-                        net.minecraft.world.item.ItemStack.fromBukkitCopy(
-                            new ItemStack(Material.FILLED_MAP, 1));
-                NBTTagCompound compound = new NBTTagCompound();
-                compound.setInt("map", id);
-                mcStack.setTag(compound);
 
-                RunTask.later(() -> {
-                    frame.setItem(mcStack.asBukkitCopy());
-                }, 5L);
+                if (PaperLib.isVersion(17, 1)) {
+                    net.minecraft.world.item.ItemStack mcStack =
+                            net.minecraft.world.item.ItemStack.fromBukkitCopy(
+                                new ItemStack(Material.FILLED_MAP, 1));
+                    NBTTagCompound compound = new NBTTagCompound();
+                    compound.setInt("map", id);
+                    mcStack.setTag(compound);
+
+                    RunTask.later(() -> {
+                        frame.setItem(mcStack.asBukkitCopy());
+                    }, 5L);
+                } else { // QuartzLib knows what it's doing. We can trust it for legacy.
+                    RunTask.later(() -> {
+                        frame.setItem(
+                                new ItemStackBuilder(Material.FILLED_MAP).nbt(ImmutableMap.of("map", id)).craftItem());
+                    }, 5L);
+                }
 
                 if (i == 0) {
                     //First map need to be rotate one time CounterClockwise
@@ -307,16 +329,22 @@ public abstract class SplatterMapManager {
 
                 int id = poster.getMapIdAtReverseY(i);
 
-                net.minecraft.world.item.ItemStack mcStack =
+                if (PaperLib.isVersion(17, 1)) {
+                    net.minecraft.world.item.ItemStack mcStack =
                         net.minecraft.world.item.ItemStack.fromBukkitCopy(new ItemStack(Material.FILLED_MAP, 1));
-                NBTTagCompound compound = new NBTTagCompound();
-                compound.setInt("map", id);
-                mcStack.setTag(compound);
+                    NBTTagCompound compound = new NBTTagCompound();
+                    compound.setInt("map", id);
+                    mcStack.setTag(compound);
 
-                RunTask.later(() -> {
-                    frame.setItem(mcStack.asBukkitCopy());
-                }, 5L);
-
+                    RunTask.later(() -> {
+                        frame.setItem(mcStack.asBukkitCopy());
+                    }, 5L);
+                } else {
+                    RunTask.later(() -> {
+                        frame.setItem(
+                            new ItemStackBuilder(Material.FILLED_MAP).nbt(ImmutableMap.of("map", id)).craftItem());
+                    }, 5L);
+                }
 
                 //Force reset of rotation
                 frame.setRotation(Rotation.NONE);

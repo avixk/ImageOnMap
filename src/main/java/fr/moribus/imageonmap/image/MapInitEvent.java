@@ -38,8 +38,10 @@ package fr.moribus.imageonmap.image;
 
 import fr.moribus.imageonmap.ImageOnMap;
 import fr.moribus.imageonmap.map.MapManager;
+import fr.zcraft.quartzlib.components.events.FutureEventHandler;
+import fr.zcraft.quartzlib.components.events.WrappedEvent;
 import fr.zcraft.quartzlib.core.QuartzLib;
-import fr.zcraft.quartzlib.tools.runners.RunTask;
+import io.papermc.lib.PaperLib;
 import java.io.File;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -71,6 +73,15 @@ public class MapInitEvent implements Listener {
         for (Player player : Bukkit.getOnlinePlayers()) {
             initMap(player.getInventory().getItemInMainHand());
         }
+
+        try {
+            Class.forName("org.bukkit.event.world.EntitiesLoadEvent", false, MapInitEvent.class.getClassLoader());
+            QuartzLib.registerEvents(new ModernEntityLoadSolution());
+        } catch (ClassNotFoundException exception) {
+            // This is "okay", we have a plan.
+            QuartzLib.registerEvents(new LegacyEntityLoadSolution());
+        }
+
     }
 
     public static void initMap(ItemStack item) {
@@ -94,15 +105,6 @@ public class MapInitEvent implements Listener {
         File imageFile = ImageOnMap.getPlugin().getImageFile(map.getId());
         if (imageFile.isFile()) {
             ImageIOExecutor.loadImage(imageFile, Renderer.installRenderer(map));
-        }
-    }
-
-    @EventHandler
-    public void onEntitiesLoad(EntitiesLoadEvent event) {
-        for (Entity entity : event.getEntities()) {
-            if (entity instanceof ItemFrame) {
-                initMap(((ItemFrame) entity).getItem());
-            }
         }
     }
 
@@ -133,4 +135,29 @@ public class MapInitEvent implements Listener {
 
         }
     }
+
+    private static class ModernEntityLoadSolution implements Listener { // Static for init()
+        @FutureEventHandler(event = "world.EntitiesLoadEvent")
+        public void onEntitiesLoad(WrappedEvent wrappedEvent) {
+            EntitiesLoadEvent event = (EntitiesLoadEvent) wrappedEvent.getEvent();
+            for (Entity entity : event.getEntities()) {
+                if (entity instanceof ItemFrame) {
+                    initMap(((ItemFrame) entity).getItem());
+                }
+            }
+        }
+    }
+
+    private static class LegacyEntityLoadSolution implements Listener { // Again, static for init()
+        @EventHandler
+        public void onChunksLoad(ChunkLoadEvent event) {
+            for (Entity entity : event.getChunk().getEntities()) {
+                if (entity instanceof ItemFrame) {
+                    initMap(((ItemFrame) entity).getItem());
+                }
+            }
+        }
+
+    }
+
 }

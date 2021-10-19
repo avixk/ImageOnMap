@@ -49,11 +49,16 @@ import fr.zcraft.quartzlib.components.i18n.I;
 import fr.zcraft.quartzlib.tools.PluginLogger;
 import fr.zcraft.quartzlib.tools.items.ItemStackBuilder;
 import fr.zcraft.quartzlib.tools.runners.RunTask;
+import io.papermc.lib.PaperLib;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent.Action;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -215,37 +220,41 @@ public class MapDetailGui extends ExplorerGui<Integer> {
         }
 
         try {
-            I.sendT(getPlayer(), "{ce} Please use the command instead, sorry!");
-            getPlayer().sendMessage(Component.text("Click here to load the command. "
-                        + "Be sure to be holding the map.",
-                    Style.style(TextDecoration.ITALIC, NamedTextColor.GRAY))
-                    .clickEvent(
-                        ClickEvent.suggestCommand("/maptool rename " + map.getName() + " ")));
-            close();
-            /*PromptGui.prompt(getPlayer(), newName -> {
-                if (!Permissions.RENAME.grantedTo(getPlayer())) {
-                    I.sendT(getPlayer(), "{ce}You are no longer allowed to do that.");
-                    return;
-                }
+            if (PaperLib.isVersion(17, 1)) {
+                I.sendT(getPlayer(), "{ce} Please use the command instead, sorry!");
+                getPlayer().sendMessage(new ComponentBuilder("Click here to load the command. "
+                        + "Be sure to be holding the map.")
+                        .italic(true)
+                        .color(ChatColor.GRAY)
+                        .event(new net.md_5.bungee.api.chat.ClickEvent(Action.SUGGEST_COMMAND,
+                        "/maptool rename " + map.getName() + " ")).create());
+                close();
+            } else {
+                PromptGui.prompt(getPlayer(), newName -> {
+                    if (!Permissions.RENAME.grantedTo(getPlayer())) {
+                        I.sendT(getPlayer(), "{ce}You are no longer allowed to do that.");
+                        return;
+                    }
 
-                if (newName == null || newName.isEmpty()) {
-                    I.sendT(getPlayer(), "{ce}Map names can't be empty.");
-                    return;
-                }
-                if (newName.equals(map.getName())) {
-                    return;
-                }
+                    if (newName == null || newName.isEmpty()) {
+                        I.sendT(getPlayer(), "{ce}Map names can't be empty.");
+                        return;
+                    }
+                    if (newName.equals(map.getName())) {
+                        return;
+                    }
 
-                map.rename(newName);
-                I.sendT(getPlayer(), "{cs}Map successfully renamed.");
+                    map.rename(newName);
+                    I.sendT(getPlayer(), "{cs}Map successfully renamed.");
 
-                if (getParent() != null) {
-                    RunTask.later(() -> Gui.open(getPlayer(), this), 1L);
+                    if (getParent() != null) {
+                        RunTask.later(() -> Gui.open(getPlayer(), this), 1L);
 
-                } else {
-                    close();
-                }
-            }, map.getName(), this);*/
+                    } else {
+                        close();
+                    }
+                }, map.getName(), this);
+            }
 
         } catch (IllegalStateException e) {
             PluginLogger.info("error while renaming");
