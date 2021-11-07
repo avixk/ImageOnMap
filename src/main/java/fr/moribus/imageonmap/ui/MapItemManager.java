@@ -50,6 +50,7 @@ import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Queue;
 import java.util.UUID;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
@@ -258,6 +259,7 @@ public class MapItemManager implements Listener {
             return;
         }
 
+
         frame.setItem(new ItemStack(Material.AIR));
         if (SplatterMapManager.hasSplatterAttributes(mapItem)) {
             if (!SplatterMapManager.placeSplatterMap(frame, player, event)) {
@@ -306,7 +308,8 @@ public class MapItemManager implements Listener {
         }
 
         if (Permissions.REMOVE_SPLATTER_MAP.grantedTo(player)) {
-            if (player.isSneaking()) {
+            //if (player.isSneaking()) {
+            if (true) {
                 PosterMap poster = SplatterMapManager.removeSplatterMap(frame, player);
                 if (poster != null) {
                     event.setCancelled(true);
@@ -326,7 +329,7 @@ public class MapItemManager implements Listener {
         }
 
         frame.setItem(new ItemStackBuilder(item)
-                .title(getMapTitle(item))
+                .title("§6" + getMapTitle(item))
                 .hideAllAttributes()
                 .item());
 
