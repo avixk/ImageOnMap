@@ -120,12 +120,16 @@
     </repositories>
 
     <dependencies>
+
+
         <dependency>
-            <groupId>io.papermc.paper</groupId>
-            <artifactId>paper</artifactId>
-            <version>1.17.1-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
+            <groupId>1.17-Spigot</groupId>
+            <artifactId>1.17-Spigot</artifactId>
+            <scope>system</scope>
+            <version>1.17</version>
+            <systemPath>C:/Users/Dylan/.m2/Spigot/Spigot-Server/target/spigot-1.17-R0.1-SNAPSHOT-remapped.jar</systemPath>
         </dependency>
+
         <dependency>
             <groupId>fr.zcraft</groupId>
             <artifactId>quartzlib</artifactId>

@@ -56,6 +56,7 @@ import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.Rotation;
 import org.bukkit.block.BlockFace;
+import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftItemStack;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -137,7 +138,7 @@ public abstract class SplatterMapManager {
      */
     public static boolean hasSplatterAttributes(ItemStack itemStack) {
         try {
-            net.minecraft.world.item.ItemStack mcStack = net.minecraft.world.item.ItemStack.fromBukkitCopy(itemStack);
+            net.minecraft.world.item.ItemStack mcStack = CraftItemStack.asNMSCopy(itemStack);
             final NBTTagCompound nbt = mcStack.getTag();
             if (nbt == null) {
                 PluginLogger.error("Item has no NBT!");
@@ -236,13 +237,13 @@ public abstract class SplatterMapManager {
                 //Rotation management relative to player rotation the default position is North,
                 // when on ceiling we flipped the rotation
                 net.minecraft.world.item.ItemStack mcStack =
-                        net.minecraft.world.item.ItemStack.fromBukkitCopy(new ItemStack(Material.FILLED_MAP, 1));
+                        CraftItemStack.asNMSCopy(new ItemStack(Material.FILLED_MAP, 1));
                 NBTTagCompound compound = new NBTTagCompound();
                 compound.setInt("map", id);
                 mcStack.setTag(compound);
 
                 RunTask.later(() -> {
-                    frame.setItem(mcStack.asBukkitCopy());
+                    frame.setItem(CraftItemStack.asBukkitCopy(mcStack));
                 }, 5L);
 
                 if (i == 0) {
@@ -302,13 +303,13 @@ public abstract class SplatterMapManager {
                 int id = poster.getMapIdAtReverseY(i);
 
                 net.minecraft.world.item.ItemStack mcStack =
-                        net.minecraft.world.item.ItemStack.fromBukkitCopy(new ItemStack(Material.FILLED_MAP, 1));
+                        CraftItemStack.asNMSCopy(new ItemStack(Material.FILLED_MAP, 1));
                 NBTTagCompound compound = new NBTTagCompound();
                 compound.setInt("map", id);
                 mcStack.setTag(compound);
 
                 RunTask.later(() -> {
-                    frame.setItem(mcStack.asBukkitCopy());
+                    frame.setItem(CraftItemStack.asBukkitCopy(mcStack));
                 }, 5L);
 
                 //Force reset of rotation

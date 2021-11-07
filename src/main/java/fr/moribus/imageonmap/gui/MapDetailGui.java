@@ -45,18 +45,12 @@ import fr.moribus.imageonmap.ui.MapItemManager;
 import fr.zcraft.quartzlib.components.gui.ExplorerGui;
 import fr.zcraft.quartzlib.components.gui.Gui;
 import fr.zcraft.quartzlib.components.gui.GuiAction;
-import fr.zcraft.quartzlib.components.gui.PromptGui;
 import fr.zcraft.quartzlib.components.i18n.I;
 import fr.zcraft.quartzlib.tools.items.ItemStackBuilder;
-import fr.zcraft.quartzlib.tools.runners.RunTask;
-import java.util.List;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class MapDetailGui extends ExplorerGui<Integer> {
@@ -234,12 +228,12 @@ public class MapDetailGui extends ExplorerGui<Integer> {
                 .open(getPlayer());
     }
 
-    ItemStack item = new ItemStack(Material.BARRIER);
+    /*ItemStack item = new ItemStack(Material.BARRIER);
     public void lol() {
         item.editMeta(meta -> {
             meta.lore(List.of(Component.text("lol"), Component.text("hey")));
         });
-    }
+    }*/
 
     @GuiAction("delete")
     public void delete() {
