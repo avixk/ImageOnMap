@@ -2,6 +2,7 @@ name: ImageOnMap
 main: fr.moribus.imageonmap.ImageOnMap
 version: "4.1.2"
 api-version: "1.16"
+load: POSTWORLD
 
 
 commands:

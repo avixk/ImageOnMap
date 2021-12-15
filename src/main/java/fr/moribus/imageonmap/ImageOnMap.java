@@ -63,6 +63,7 @@ import fr.zcraft.quartzlib.tools.PluginLogger;
 import fr.zcraft.quartzlib.tools.UpdateChecker;
 import java.io.File;
 import java.io.IOException;
+import org.bukkit.Bukkit;
 
 public final class ImageOnMap extends QuartzPlugin {
     private static final String IMAGES_DIRECTORY_NAME = "images";
@@ -120,9 +121,14 @@ public final class ImageOnMap extends QuartzPlugin {
         //Init all the things !
         I18n.setPrimaryLocale(PluginConfiguration.LANG.get());
 
-        MapManager.init();
-        MapInitEvent.init();
-        MapItemManager.init();
+        Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+            @Override
+            public void run() {
+                MapManager.init();
+                MapInitEvent.init();
+                MapItemManager.init();
+            }
+        },20 * 30);
 
 
         Commands.register(
